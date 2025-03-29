@@ -1,0 +1,10 @@
+services:
+  #nginx service -> redirects requests to node services for load balancing
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      #bind mount to load nginx configuration without creating custom image, ro - read only
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  node-app:
+    build: .

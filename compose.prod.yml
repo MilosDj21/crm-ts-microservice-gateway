@@ -1,0 +1,15 @@
+services:
+  nginx:
+    ports:
+      #host:docker
+      - "80:80"
+
+  node-app:
+    build:
+      context: .
+      args:
+        NODE_ENV: production
+    environment:
+      NODE_ENV: production
+      #Pulls this from host env vars
+      JWT_SECRET: ${JWT_SECRET}

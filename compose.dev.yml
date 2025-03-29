@@ -1,0 +1,19 @@
+services:
+  nginx:
+    ports:
+      #host:docker
+      - "5000:80"
+
+  #Node service
+  node-app:
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+    volumes:
+      #Bind mount - syncs host and container directory
+      - ./:/app
+      #Anonymous volume - here used to override bind mount sync for node_modules(when node_modules are deleted on host, in container they remain)
+      - /app/node_modules
+    #Overrides cmd from dockerfile
+    command: npm run start:dev
