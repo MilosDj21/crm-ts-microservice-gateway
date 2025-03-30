@@ -4,7 +4,10 @@ import bcrypt from "bcrypt";
 import { kafka } from "../kafkaClient";
 import { v4 as uuidv4 } from "uuid";
 
-import { UnauthorizedError } from "../middlewares/CustomError";
+import {
+  GatewayTimeoutError,
+  UnauthorizedError,
+} from "../middlewares/CustomError";
 
 class AuthService {
   private producer;
@@ -87,7 +90,12 @@ class AuthService {
       // Create a timeout for the response
       const timeout = setTimeout(() => {
         this.pendingRequests.delete(correlationId);
-        reject(new Error("Timeout waiting for response"));
+        reject(
+          new GatewayTimeoutError(
+            "Gateway Timeout",
+            "Retrieving users data failed",
+          ),
+        );
       }, 10000);
 
       // Store the pending request in the map
