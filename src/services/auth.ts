@@ -38,7 +38,7 @@ class AuthService {
   }
 
   async login(email: string, password: string, twoFaToken: string) {
-    const user = await this.userRepository.findOneBy({ email });
+    const user = await this.getUserData(email);
     if (!user)
       throw new UnauthorizedError(
         "Credentials not correct",
@@ -75,7 +75,7 @@ class AuthService {
     };
   }
 
-  private async getUserData(requestData) {
+  private async getUserData(email: string) {
     const correlationId = uuidv4();
 
     await this.producer.connect();
@@ -127,17 +127,17 @@ class AuthService {
       topic: this.requestTopic,
       messages: [
         {
-          value: JSON.stringify(requestData),
+          value: JSON.stringify(email),
           headers: { correlationId },
         },
       ],
     });
 
     // Wait for the response promise to resolve
-    const response = await responsePromise;
+    const response: any = await responsePromise;
     await this.producer.disconnect();
     await this.consumer.disconnect();
-    return response;
+    return JSON.parse(response);
   }
 }
 
