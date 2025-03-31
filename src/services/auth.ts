@@ -22,7 +22,7 @@ class AuthService {
   async login(email: string, password: string, twoFaToken: string) {
     const kafkaClient = KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
-      email,
+      { email },
       "request-user-by-email",
       "response-user-by-email",
     );
