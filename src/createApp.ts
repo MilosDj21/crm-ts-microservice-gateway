@@ -8,6 +8,7 @@ import path from "path";
 import { errorHandler } from "./middlewares/error-handling";
 import { BadRequestError } from "./middlewares/CustomError";
 
+import userRoutes from "./routes/user";
 import authRoutes from "./routes/auth";
 
 export const createApp = () => {
@@ -35,6 +36,7 @@ export const createApp = () => {
 
   //routes
   app.use("/api/v1/auth", authRoutes);
+  app.use("/api/v1/users", userRoutes);
 
   // Fallback route for non-existent endpoints
   app.use((req, res, next) => {
