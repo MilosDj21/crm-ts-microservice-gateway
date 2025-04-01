@@ -97,4 +97,18 @@ const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { verifyToken, isAdmin };
+const isCurrentUserOrAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const currUserId = req.userId;
+  const reqUserId = req.params.id;
+  if (currUserId == parseInt(reqUserId) {
+    next();
+  } else {
+    isAdmin(req, res, next);
+  }
+};
+
+export { verifyToken, isCurrentUserOrAdmin, isAdmin };
