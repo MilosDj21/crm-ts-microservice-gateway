@@ -6,7 +6,7 @@ import KafkaClient from "../kafka/KafkaClient";
 import { UnauthorizedError } from "../middlewares/CustomError";
 
 class AuthService {
-  private createJwt(id: number) {
+  private createJwt = (id: number) => {
     //3 days in seconds
     const maxAge = 3 * 24 * 60 * 60;
     const secret = process.env.JWT_SECRET;
@@ -17,7 +17,7 @@ class AuthService {
     } else {
       return null;
     }
-  }
+  };
 
   public login = async (
     email: string,
