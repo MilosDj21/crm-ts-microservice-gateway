@@ -20,9 +20,11 @@ class KafkaClient {
     this.pendingRequests = new Map();
   }
 
-  static getInstance() {
+  static async getInstance() {
     if (!this.singleInstance) {
       this.singleInstance = new KafkaClient();
+      await this.singleInstance.producer.connect();
+      await this.singleInstance.consumer.connect();
     }
     return this.singleInstance;
   }
@@ -33,8 +35,6 @@ class KafkaClient {
     responseTopic: string,
   ) {
     const correlationId = uuidv4();
-    await this.producer.connect();
-    await this.consumer.connect();
     await this.consumer.subscribe({
       topic: responseTopic,
       fromBeginning: false,
@@ -94,6 +94,16 @@ class KafkaClient {
     await this.consumer.disconnect();
     return JSON.parse(response);
   }
+
+  public disconnect = async () => {
+    try {
+      await this.consumer.disconnect();
+      await this.producer.disconnect();
+      console.log("Kafka connections closed gracefully.");
+    } catch (err) {
+      console.error("Error during Kafka disconnect:", err);
+    }
+  };
 }
 
 export default KafkaClient;
