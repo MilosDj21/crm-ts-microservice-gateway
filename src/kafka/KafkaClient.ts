@@ -65,13 +65,20 @@ class KafkaClient {
           message.headers["correlationId"] &&
           message.headers["correlationId"].toString() === correlationId
         ) {
-          // If a matching pending request exists, resolve it
+          // If a matching pending request exists, resolve or reject it
           if (this.pendingRequests.has(correlationId) && message.value) {
-            const { resolve, timeout } =
+            const { resolve, reject, timeout } =
               this.pendingRequests.get(correlationId);
             clearTimeout(timeout);
             this.pendingRequests.delete(correlationId);
-            resolve(message.value.toString());
+
+            const parsed = JSON.parse(message.value.toString());
+
+            if (parsed.error) {
+              reject(parsed.error);
+            } else {
+              resolve(parsed.data);
+            }
           }
         }
       },
