@@ -21,7 +21,7 @@ router.use(verifyToken);
 router.get("/:id", [isCurrentUserOrAdmin], getOne);
 router.get("/", [isAdmin], getAll);
 router.post("/", [isAdmin, multerConf], saveOne);
-router.patch("/:id", [isCurrentUserOrAdmin], updateOne);
+router.patch("/:id", [isCurrentUserOrAdmin, multerConf], updateOne);
 router.delete("/:id", [isAdmin], deleteOne);
 
 export default router;
