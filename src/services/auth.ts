@@ -19,8 +19,12 @@ class AuthService {
     }
   }
 
-  async login(email: string, password: string, twoFaToken: string) {
-    const kafkaClient = KafkaClient.getInstance();
+  public login = async (
+    email: string,
+    password: string,
+    twoFaToken: string,
+  ) => {
+    const kafkaClient = await KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
       { email },
       "request-user-by-email",
@@ -60,7 +64,7 @@ class AuthService {
       profileImage: user.profileImage,
       jwtToken,
     };
-  }
+  };
 }
 
 export default AuthService;

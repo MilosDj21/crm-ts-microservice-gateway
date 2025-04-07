@@ -49,7 +49,7 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
         "User id not valid",
       );
 
-    const kafkaClient = KafkaClient.getInstance();
+    const kafkaClient = await KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
       { id: decoded.id },
       "request-user-by-id",
@@ -72,7 +72,7 @@ const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
     if (!userId)
       throw new UnauthorizedError("Unauthorized", "User id non existent");
 
-    const kafkaClient = KafkaClient.getInstance();
+    const kafkaClient = await KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
       {
         where: { id: userId },
