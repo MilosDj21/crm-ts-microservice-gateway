@@ -112,7 +112,7 @@ const isCurrentUserOrAdmin = async (
 ) => {
   const currUserId = req.userId;
   const reqUserId = req.params.id;
-  if (currUserId == parseInt(reqUserId) {
+  if (currUserId == parseInt(reqUserId)) {
     next();
   } else {
     isAdmin(req, res, next);
