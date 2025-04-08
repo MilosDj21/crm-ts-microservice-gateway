@@ -51,7 +51,12 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
 
     const kafkaClient = await KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
-      { id: decoded.id },
+      {
+        data: {
+          id: decoded.id,
+        },
+        error: null,
+      },
       "request-user-by-id",
       "response-user-by-id",
     );
@@ -75,8 +80,11 @@ const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
     const kafkaClient = await KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
       {
-        where: { id: userId },
-        relations: { roles: true },
+        data: {
+          where: { id: userId },
+          relations: { roles: true },
+        },
+        error: null,
       },
       "request-user-by-id-with-roles",
       "response-user-by-id-with-roles",

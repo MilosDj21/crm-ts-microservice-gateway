@@ -26,7 +26,10 @@ class AuthService {
   ) => {
     const kafkaClient = await KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
-      { email },
+      {
+        data: { email },
+        error: null,
+      },
       "request-user-by-email",
       "response-user-by-email",
     );
