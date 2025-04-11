@@ -23,5 +23,7 @@ router.get("/", [isAdmin], getAll);
 router.post("/", [isAdmin, multerConf], saveOne);
 router.patch("/:id", [isCurrentUserOrAdmin, multerConf], updateOne);
 router.delete("/:id", [isAdmin], deleteOne);
+//role route
+router.get("/:id/roles", [isCurrentUserOrAdmin], getUserRoles);
 
 export default router;
