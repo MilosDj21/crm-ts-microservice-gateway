@@ -1,11 +1,12 @@
 import { Router } from "express";
 
 import {
-  deleteOne,
-  getAll,
-  getOne,
-  saveOne,
-  updateOne,
+  getUserById,
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  getUserRoles,
 } from "../controllers/user";
 import {
   isAdmin,
@@ -18,11 +19,13 @@ const router = Router();
 
 router.use(verifyToken);
 
-router.get("/:id", [isCurrentUserOrAdmin], getOne);
-router.get("/", [isAdmin], getAll);
-router.post("/", [isAdmin, multerConf], saveOne);
-router.patch("/:id", [isCurrentUserOrAdmin, multerConf], updateOne);
-router.delete("/:id", [isAdmin], deleteOne);
+//user routes
+router.get("/:id", [isCurrentUserOrAdmin], getUserById);
+router.get("/", [isAdmin], getUsers);
+router.post("/", [isAdmin, multerConf], createUser);
+router.patch("/:id", [isCurrentUserOrAdmin, multerConf], updateUser);
+router.delete("/:id", [isAdmin], deleteUser);
+
 //role route
 router.get("/:id/roles", [isCurrentUserOrAdmin], getUserRoles);
 
