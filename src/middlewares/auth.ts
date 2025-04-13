@@ -6,7 +6,7 @@ import jwt, {
 import { Request, Response, NextFunction } from "express";
 
 import { ForbiddenError, UnauthorizedError } from "./CustomError";
-import KafkaClient from "../kafka/KafkaClient";
+import UserService from "../services/user";
 
 declare module "express" {
   export interface Request {
@@ -49,17 +49,8 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
         "User id not valid",
       );
 
-    const kafkaClient = await KafkaClient.getInstance();
-    const user = await kafkaClient.emitEvent(
-      {
-        data: {
-          id: decoded.id,
-        },
-        error: null,
-      },
-      "request-user-by-id",
-      "response-user-by-id",
-    );
+    const userService = new UserService();
+    const user = await userService.findById(decoded.id);
     if (!user)
       throw new UnauthorizedError("Credentials not correct", "User not found");
 
@@ -77,23 +68,14 @@ const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
     if (!userId)
       throw new UnauthorizedError("Unauthorized", "User id non existent");
 
-    const kafkaClient = await KafkaClient.getInstance();
-    const user = await kafkaClient.emitEvent(
-      {
-        data: {
-          where: { id: userId },
-          relations: { roles: true },
-        },
-        error: null,
-      },
-      "request-user-by-id-with-roles",
-      "response-user-by-id-with-roles",
-    );
-    if (!user) throw new UnauthorizedError("Unauthorized", "Invalid User");
+    const userService = new UserService();
+    const userRoles = await userService.findRolesByUserId(userId);
+
+    if (!userRoles) throw new UnauthorizedError("Unauthorized", "Invalid User");
 
     let isAdmin = false;
-    for (const role of user.roles) {
-      if (role.name === "Admin") isAdmin = true;
+    for (const role of userRoles) {
+      if (role.name && role.name === "Admin") isAdmin = true;
     }
     if (isAdmin) {
       next();
