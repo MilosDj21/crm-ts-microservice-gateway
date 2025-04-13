@@ -5,6 +5,7 @@ import { isEmail, isStrongPassword } from "validator";
 
 import { BadRequestError } from "../middlewares/CustomError";
 import KafkaClient from "../kafka/KafkaClient";
+import { User } from "../interfaces";
 
 class UserService {
   public findById = async (id: number) => {
@@ -99,6 +100,21 @@ class UserService {
     if (!user) throw new Error("Failed to save user to the db");
 
     return imageQr;
+  };
+
+  public update = async (userObject: User) => {
+    const kafkaClient = await KafkaClient.getInstance();
+    const user = await kafkaClient.emitEvent(
+      {
+        data: {
+          userObject,
+        },
+        error: null,
+      },
+      "request-update-user",
+      "response-update-user",
+    );
+    return user;
   };
 
   public findRolesByUserId = async (id: number) => {
