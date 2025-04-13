@@ -25,7 +25,15 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getUsers = async (req: Request, res: Response, next: NextFunction) => {};
+const getUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userService = new UserService();
+    const userList = userService.findAll();
+    res.status(200).json({ data: userList });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password, firstName, lastName, roleIds } = req.body;
