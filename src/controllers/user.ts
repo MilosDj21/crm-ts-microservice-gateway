@@ -25,7 +25,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       throw new BadRequestError("All fields must be filled");
 
     const userService = new UserService();
-    const imageQr = await userService.saveOne(
+    const imageQr = await userService.create(
       email,
       password,
       firstName,
