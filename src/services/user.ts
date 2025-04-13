@@ -37,6 +37,19 @@ class UserService {
     return user;
   };
 
+  public findAll = async () => {
+    const kafkaClient = await KafkaClient.getInstance();
+    const user = await kafkaClient.emitEvent(
+      {
+        data: null,
+        error: null,
+      },
+      "request-users",
+      "response-users",
+    );
+    return user;
+  };
+
   public create = async (
     email: string,
     password: string,
