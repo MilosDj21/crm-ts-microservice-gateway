@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { BadRequestError, NotFoundError } from "../middlewares/CustomError";
 import UserService from "../services/user";
+import { User } from "../interfaces";
 
 declare module "express" {
   export interface Request {
@@ -61,11 +62,31 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const updateUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {};
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req.params;
+  const { email, firstName, lastName, password, roles } = req.body;
+  const profileImage = req.file;
+  try {
+    if (!userId) throw new BadRequestError("Invalid id");
+
+    const user: User = {};
+    if (email) user.email = email;
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (password) user.password = password;
+    if (roles) user.roles = roles;
+    if (profileImage) user.profileImage = profileImage.path;
+
+    const userService = new UserService();
+    const updatedUser = await userService.update(user);
+    res.status(200).json({
+      data: updatedUser,
+      message: "Updated Successfully!",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const deleteUser = async (
   req: Request,
