@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import { authenticator } from "otplib";
 import bcrypt from "bcrypt";
-import KafkaClient from "../kafka/KafkaClient";
 
 import { UnauthorizedError } from "../middlewares/CustomError";
+import UserService from "./user";
 
 class AuthService {
   private createJwt = (id: number) => {
@@ -24,15 +24,8 @@ class AuthService {
     password: string,
     twoFaToken: string,
   ) => {
-    const kafkaClient = await KafkaClient.getInstance();
-    const user = await kafkaClient.emitEvent(
-      {
-        data: { email },
-        error: null,
-      },
-      "request-user-by-email",
-      "response-user-by-email",
-    );
+    const userService = new UserService();
+    const user = await userService.findByEmail(email);
     if (!user)
       throw new UnauthorizedError(
         "Credentials not correct",
