@@ -63,7 +63,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req.params;
+  const userId = req.params.id;
   const { email, firstName, lastName, password, roles } = req.body;
   const profileImage = req.file;
   try {
