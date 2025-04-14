@@ -117,6 +117,21 @@ class UserService {
     return user;
   };
 
+  public removeById = async (id: number) => {
+    const kafkaClient = await KafkaClient.getInstance();
+    const user = await kafkaClient.emitEvent(
+      {
+        data: {
+          id,
+        },
+        error: null,
+      },
+      "request-remove-user",
+      "response-remove-user",
+    );
+    return user;
+  };
+
   public findRolesByUserId = async (id: number) => {
     const kafkaClient = await KafkaClient.getInstance();
     const userRoles = await kafkaClient.emitEvent(
