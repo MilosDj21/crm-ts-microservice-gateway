@@ -88,11 +88,21 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const deleteUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {};
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.params.id;
+  try {
+    if (!userId || isNaN(parseInt(userId)))
+      throw new BadRequestError("Invalid id");
+
+    const userService = new UserService();
+    const user = await userService.removeById(parseInt(userId));
+    if (!user) throw new NotFoundError("User not found");
+
+    res.status(200).json({ data: user });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const getUserRoles = async (
   req: Request,
