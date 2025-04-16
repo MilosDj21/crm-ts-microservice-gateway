@@ -68,9 +68,11 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   const { email, firstName, lastName, password, roles } = req.body;
   const profileImage = req.file;
   try {
-    if (!userId) throw new BadRequestError("Invalid id");
+    if (!userId || isNaN(parseInt(userId)))
+      throw new BadRequestError("Invalid id");
 
     const user: User = {};
+    user.id = parseInt(userId);
     if (email) user.email = email;
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
