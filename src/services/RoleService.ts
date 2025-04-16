@@ -59,11 +59,11 @@ class RoleService {
     return role;
   };
 
-  public update = async (name: string) => {
+  public update = async (id: number, name: string) => {
     const kafkaClient = await KafkaClient.getInstance();
     const role = await kafkaClient.emitEvent(
       {
-        data: name,
+        data: { id, name },
         error: null,
       },
       "request-update-role",
