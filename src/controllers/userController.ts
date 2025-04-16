@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { BadRequestError, NotFoundError } from "../middlewares/CustomError";
-import UserService from "../services/user";
+import UserService from "../services/UserService";
 import { User } from "../interfaces";
 
 declare module "express" {

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { BadRequestError } from "../middlewares/CustomError";
-import AuthService from "../services/auth";
+import AuthService from "../services/AuthService";
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password, twoFaToken } = req.body;

@@ -7,7 +7,7 @@ import {
   updateUser,
   deleteUser,
   getUserRoles,
-} from "../controllers/user";
+} from "../controllers/userController";
 import {
   isAdmin,
   isCurrentUserOrAdmin,

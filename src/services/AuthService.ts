@@ -3,7 +3,7 @@ import { authenticator } from "otplib";
 import bcrypt from "bcrypt";
 
 import { UnauthorizedError } from "../middlewares/CustomError";
-import UserService from "./user";
+import UserService from "./UserService";
 
 class AuthService {
   private createJwt = (id: number) => {

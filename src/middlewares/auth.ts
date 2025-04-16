@@ -6,7 +6,7 @@ import jwt, {
 import { Request, Response, NextFunction } from "express";
 
 import { ForbiddenError, UnauthorizedError } from "./CustomError";
-import UserService from "../services/user";
+import UserService from "../services/UserService";
 
 declare module "express" {
   export interface Request {
