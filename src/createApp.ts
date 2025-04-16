@@ -8,8 +8,8 @@ import path from "path";
 import { errorHandler } from "./middlewares/error-handling";
 import { BadRequestError } from "./middlewares/CustomError";
 
-import userRoutes from "./routes/user";
-import authRoutes from "./routes/auth";
+import userRoutes from "./routes/userRoutes";
+import authRoutes from "./routes/authRoutes";
 
 export const createApp = () => {
   const clientAddress =
