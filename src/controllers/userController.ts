@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { BadRequestError, NotFoundError } from "../middlewares/CustomError";
 import UserService from "../services/UserService";
 import { User } from "../interfaces";
+import RoleService from "../services/RoleService";
 
 declare module "express" {
   export interface Request {
@@ -108,7 +109,21 @@ const getUserRoles = async (
   req: Request,
   res: Response,
   next: NextFunction,
-) => {};
+) => {
+  const userId = req.params.id;
+  try {
+    if (!userId || isNaN(parseInt(userId)))
+      throw new BadRequestError("Invalid id");
+
+    const roleService = new RoleService();
+    const roles = await roleService.findByUserId(parseInt(userId));
+    if (!roles || roles.length == 0) throw new NotFoundError("Roles not found");
+
+    res.status(200).json({ data: roles });
+  } catch (err) {
+    next(err);
+  }
+};
 
 export {
   getUserById,
