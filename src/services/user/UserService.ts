@@ -104,6 +104,12 @@ class UserService {
   };
 
   public update = async (userObject: User) => {
+    if (userObject.password) {
+      const salt = await bcrypt.genSalt();
+      const hashPassword = await bcrypt.hash(userObject.password, salt);
+      userObject.password = hashPassword;
+    }
+
     const kafkaClient = await KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
       {
