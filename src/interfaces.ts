@@ -7,3 +7,12 @@ export interface User {
   roles?: Array<number>;
   profileImage?: string;
 }
+
+export interface Ticket {
+  id?: number;
+  title?: string;
+  status?: string;
+  category?: string;
+  user?: number;
+  seenByAdmin?: boolean;
+}
