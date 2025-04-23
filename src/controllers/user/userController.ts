@@ -69,14 +69,15 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     if (!userId || isNaN(parseInt(userId)))
       throw new BadRequestError("Invalid id");
 
-    const user: User = {};
-    user.id = parseInt(userId);
-    if (email) user.email = email;
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (password) user.password = password;
-    if (roles) user.roles = roles;
-    if (profileImage) user.profileImage = profileImage.path;
+    const user: User = {
+      id: parseInt(userId),
+      email,
+      firstName,
+      lastName,
+      password,
+      roles,
+      profileImage: profileImage ? profileImage.path : "",
+    };
 
     const userService = new UserService();
     const updatedUser = await userService.update(user);
