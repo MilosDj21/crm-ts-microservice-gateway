@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-import { BadRequestError, NotFoundError } from "../middlewares/CustomError";
-import RoleService from "../services/RoleService";
+import { BadRequestError, NotFoundError } from "../../middlewares/CustomError";
+import RoleService from "../../services/user/RoleService";
 
 const getRoleById = async (req: Request, res: Response, next: NextFunction) => {
   const roleId = req.params.id;

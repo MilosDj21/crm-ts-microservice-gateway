@@ -3,9 +3,9 @@ import { authenticator } from "otplib";
 import bcrypt from "bcrypt";
 import { isEmail, isStrongPassword } from "validator";
 
-import { BadRequestError } from "../middlewares/CustomError";
-import KafkaClient from "../kafka/KafkaClient";
-import { User } from "../interfaces";
+import { BadRequestError } from "../../middlewares/CustomError";
+import KafkaClient from "../../kafka/KafkaClient";
+import { User } from "../../interfaces";
 
 class UserService {
   public findById = async (id: number) => {

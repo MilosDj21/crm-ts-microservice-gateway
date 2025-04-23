@@ -1,4 +1,4 @@
-import KafkaClient from "../kafka/KafkaClient";
+import KafkaClient from "../../kafka/KafkaClient";
 
 class RoleService {
   public findById = async (id: number) => {

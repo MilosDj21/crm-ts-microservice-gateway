@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { authenticator } from "otplib";
 import bcrypt from "bcrypt";
 
-import { UnauthorizedError } from "../middlewares/CustomError";
+import { UnauthorizedError } from "../../middlewares/CustomError";
 import UserService from "./UserService";
 
 class AuthService {

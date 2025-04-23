@@ -6,8 +6,8 @@ import {
   createRole,
   updateRole,
   deleteRole,
-} from "../controllers/roleController";
-import { isAdmin, verifyToken } from "../middlewares/auth";
+} from "../../controllers/user/roleController";
+import { isAdmin, verifyToken } from "../../middlewares/auth";
 
 const router = Router();
 

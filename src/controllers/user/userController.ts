@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 
-import { BadRequestError, NotFoundError } from "../middlewares/CustomError";
-import UserService from "../services/UserService";
-import { User } from "../interfaces";
-import RoleService from "../services/RoleService";
+import { BadRequestError, NotFoundError } from "../../middlewares/CustomError";
+import UserService from "../../services/user/UserService";
+import { User } from "../../interfaces";
+import RoleService from "../../services/user/RoleService";
 
 declare module "express" {
   export interface Request {

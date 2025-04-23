@@ -8,9 +8,9 @@ import path from "path";
 import { errorHandler } from "./middlewares/error-handling";
 import { BadRequestError } from "./middlewares/CustomError";
 
-import userRoutes from "./routes/userRoutes";
-import authRoutes from "./routes/authRoutes";
-import roleRoutes from "./routes/roleRoutes";
+import userRoutes from "./routes/user/userRoutes";
+import authRoutes from "./routes/user/authRoutes";
+import roleRoutes from "./routes/user/roleRoutes";
 
 export const createApp = () => {
   const clientAddress =

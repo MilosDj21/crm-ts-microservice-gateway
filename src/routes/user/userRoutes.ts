@@ -7,13 +7,13 @@ import {
   updateUser,
   deleteUser,
   getUserRoles,
-} from "../controllers/userController";
+} from "../../controllers/user/userController";
 import {
   isAdmin,
   isCurrentUserOrAdmin,
   verifyToken,
-} from "../middlewares/auth";
-import multerConf from "../middlewares/multerConf";
+} from "../../middlewares/auth";
+import multerConf from "../../middlewares/multerConf";
 
 const router = Router();
 
