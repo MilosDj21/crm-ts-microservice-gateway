@@ -6,6 +6,7 @@ export interface User {
   lastName?: string;
   roles?: Array<number>;
   profileImage?: string;
+  secret?: string;
 }
 
 export interface Ticket {
