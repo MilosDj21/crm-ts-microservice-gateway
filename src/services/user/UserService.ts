@@ -51,23 +51,32 @@ class UserService {
     return user;
   };
 
-  public create = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-    profileImage: string,
-    roleIds: Array<number>,
-  ) => {
-    if (!isEmail(email)) throw new BadRequestError("Not a valid email!");
-    if (!isStrongPassword(password))
+  public create = async (userObject: User) => {
+    if (
+      !userObject.email ||
+      !userObject.password ||
+      !userObject.firstName ||
+      !userObject.lastName ||
+      !userObject.roles
+    )
+      throw new BadRequestError("All fields must be filled");
+    if (!isEmail(userObject.email))
+      throw new BadRequestError("Not a valid email!");
+    if (!isStrongPassword(userObject.password))
       throw new BadRequestError("Password not strong enough!");
 
     const salt = await bcrypt.genSalt();
-    const hashPassword = await bcrypt.hash(password, salt);
+    const hashPassword = await bcrypt.hash(userObject.password, salt);
+    userObject.password = hashPassword;
 
     const secret = authenticator.generateSecret();
-    const otpauth = authenticator.keyuri(email, "Imaginary CRM", secret);
+    userObject.secret = secret;
+
+    const otpauth = authenticator.keyuri(
+      userObject.email,
+      "Imaginary CRM",
+      secret,
+    );
     let imageQr = "";
     qrcode.toDataURL(
       otpauth,
@@ -83,15 +92,7 @@ class UserService {
     const kafkaClient = await KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
       {
-        data: {
-          email,
-          password: hashPassword,
-          firstName,
-          lastName,
-          profileImage,
-          secret,
-          roleIds,
-        },
+        data: userObject,
         error: null,
       },
       "request-create-user",

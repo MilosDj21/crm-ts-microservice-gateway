@@ -41,18 +41,16 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password, firstName, lastName, roleIds } = req.body;
   const profileImage = req.file;
   try {
-    if (!email || !password || !firstName || !lastName || !roleIds)
-      throw new BadRequestError("All fields must be filled");
-
-    const userService = new UserService();
-    const imageQr = await userService.create(
+    const userObject: User = {
       email,
       password,
       firstName,
       lastName,
-      profileImage ? profileImage.path : "",
-      roleIds,
-    );
+      profileImage: profileImage ? profileImage.path : "",
+      roles: roleIds,
+    };
+    const userService = new UserService();
+    const imageQr = await userService.create(userObject);
 
     res.status(200).json({
       data: imageQr,
