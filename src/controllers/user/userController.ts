@@ -119,7 +119,7 @@ const getUserRoles = async (
 
     const roleService = new RoleService();
     const roles = await roleService.findByUserId(parseInt(userId));
-    if (!roles || roles.length == 0) throw new NotFoundError("Roles not found");
+    if (!roles) throw new NotFoundError("Roles not found");
 
     res.status(200).json({ data: roles });
   } catch (err) {
