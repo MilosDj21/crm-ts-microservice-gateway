@@ -4,6 +4,7 @@ import { BadRequestError, NotFoundError } from "../../middlewares/CustomError";
 import UserService from "../../services/user/UserService";
 import { User } from "../../interfaces";
 import RoleService from "../../services/user/RoleService";
+import TicketService from "../../services/ticket/TicketService";
 
 declare module "express" {
   export interface Request {
@@ -126,6 +127,26 @@ const getUserRoles = async (
   }
 };
 
+const getUserTickets = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const userId = req.params.id;
+  try {
+    if (!userId || isNaN(parseInt(userId)))
+      throw new BadRequestError("Invalid id");
+
+    const ticketService = new TicketService();
+    const tickets = await ticketService.findByUserId(parseInt(userId));
+    if (!tickets) throw new NotFoundError("Tickets not found");
+
+    res.status(200).json({ data: tickets });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export {
   getUserById,
   getUsers,
@@ -133,4 +154,5 @@ export {
   updateUser,
   deleteUser,
   getUserRoles,
+  getUserTickets,
 };
