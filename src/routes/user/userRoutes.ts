@@ -7,6 +7,7 @@ import {
   updateUser,
   deleteUser,
   getUserRoles,
+  getUserTickets,
 } from "../../controllers/user/userController";
 import {
   isAdmin,
@@ -28,5 +29,8 @@ router.delete("/:id", [isAdmin], deleteUser);
 
 //role route
 router.get("/:id/roles", [isCurrentUserOrAdmin], getUserRoles);
+
+//ticket route
+router.get("/:id/tickets", [isCurrentUserOrAdmin], getUserTickets);
 
 export default router;
