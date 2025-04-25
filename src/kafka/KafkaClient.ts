@@ -97,8 +97,6 @@ class KafkaClient {
 
     // Wait for the response promise to resolve
     const response: any = await responsePromise;
-    await this.producer.disconnect();
-    await this.consumer.disconnect();
     return JSON.parse(response);
   }
 
