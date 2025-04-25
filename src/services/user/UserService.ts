@@ -113,9 +113,7 @@ class UserService {
     const kafkaClient = await KafkaClient.getInstance();
     const user = await kafkaClient.emitEvent(
       {
-        data: {
-          userObject,
-        },
+        data: userObject,
         error: null,
       },
       "request-update-user",
