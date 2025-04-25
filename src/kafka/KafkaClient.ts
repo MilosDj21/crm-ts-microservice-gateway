@@ -90,7 +90,7 @@ class KafkaClient {
       messages: [
         {
           value: JSON.stringify(requestData),
-          headers: { correlationId },
+          headers: { correlationId, responseTopic },
         },
       ],
     });
