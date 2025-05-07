@@ -4,15 +4,9 @@ import AuthService from "../../../src/services/user/AuthService";
 import { UnauthorizedError } from "../../../src/middlewares/CustomError";
 import { createApp } from "../../../src/createApp";
 
-// Automatically replaces AuthService methods with Jest mock functions
-jest.mock("../../../src/services/auth");
-
 describe("User Authentication", () => {
   describe("POST /login", () => {
     let app: Application;
-    const mockedAuthService = AuthService as jest.MockedClass<
-      typeof AuthService
-    >;
 
     beforeAll(() => {
       app = createApp();
@@ -23,14 +17,16 @@ describe("User Authentication", () => {
     });
 
     it("should return 200 and a token for valid credentials", async () => {
-      mockedAuthService.prototype.login.mockResolvedValue({
-        id: 1,
-        email: "test@example.com",
-        firstName: "testName",
-        lastName: "testLastName",
-        profileImage: "testImagePath",
-        jwtToken: "fakeToken",
-      });
+      const loginSpy = jest
+        .spyOn(AuthService.prototype, "login")
+        .mockResolvedValue({
+          id: 1,
+          email: "test@example.com",
+          firstName: "testName",
+          lastName: "testLastName",
+          profileImage: "testImagePath",
+          jwtToken: "fakeToken",
+        });
 
       const response = await request(app).post("/api/v1/auth/login").send({
         email: "test@example.com",
@@ -47,7 +43,7 @@ describe("User Authentication", () => {
         profileImage: "testImagePath",
         jwtToken: "fakeToken",
       });
-      expect(mockedAuthService.prototype.login).toHaveBeenCalledWith(
+      expect(loginSpy).toHaveBeenCalledWith(
         "test@example.com",
         "password123",
         "testTwoFaToken",
@@ -97,9 +93,9 @@ describe("User Authentication", () => {
     });
 
     it("should return 401 for invalid credentials", async () => {
-      mockedAuthService.prototype.login.mockRejectedValue(
-        new UnauthorizedError("Credentials not correct"),
-      );
+      const loginSpy = jest
+        .spyOn(AuthService.prototype, "login")
+        .mockRejectedValue(new UnauthorizedError("Credentials not correct"));
 
       const response = await request(app).post("/api/v1/auth/login").send({
         email: "test@example.com",
@@ -109,7 +105,7 @@ describe("User Authentication", () => {
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty("error", "Credentials not correct");
-      expect(mockedAuthService.prototype.login).toHaveBeenCalledWith(
+      expect(loginSpy).toHaveBeenCalledWith(
         "test@example.com",
         "wrongpassword",
         "testTwoFaToken",
