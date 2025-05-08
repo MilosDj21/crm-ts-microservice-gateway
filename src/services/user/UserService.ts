@@ -21,6 +21,7 @@ class UserService {
       "response-user-by-id",
     );
     delete user.password;
+    delete user.secret;
     return user;
   };
 
@@ -36,7 +37,6 @@ class UserService {
       "request-user-by-email",
       "response-user-by-email",
     );
-    delete user.password;
     return user;
   };
 
@@ -52,6 +52,7 @@ class UserService {
     );
     for (const u of users) {
       delete u.password;
+      delete u.secret;
     }
     return users;
   };
@@ -126,6 +127,7 @@ class UserService {
     );
 
     delete user.password;
+    delete user.secret;
     return user;
   };
 
@@ -143,6 +145,7 @@ class UserService {
     );
 
     delete user.password;
+    delete user.secret;
     return user;
   };
 
