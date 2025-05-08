@@ -58,6 +58,7 @@ class AuthService {
       firstName: user.firstName,
       lastName: user.lastName,
       profileImage: user.profileImage,
+      roles: user.roles,
       jwtToken,
     };
   };
