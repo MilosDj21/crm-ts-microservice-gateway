@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 import AuthService from "../../../src/services/user/AuthService";
 import UserService from "../../../src/services/user/UserService";
 import { UnauthorizedError } from "../../../src/middlewares/CustomError";
-import { mock } from "node:test";
 
 jest.mock("bcrypt");
 jest.mock("otplib");
