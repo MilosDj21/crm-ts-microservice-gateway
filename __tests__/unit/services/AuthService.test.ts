@@ -30,6 +30,7 @@ describe("Auth Service - login", () => {
       firstName: "firstName",
       lastName: "lastName",
       profileImage: "imagePath",
+      roles: [1, 2],
       secret: "twoFaSecret",
     };
 
@@ -61,11 +62,12 @@ describe("Auth Service - login", () => {
       expiresIn: 3 * 24 * 60 * 60,
     });
     expect(user).toMatchObject({
-      id: 1,
-      email: "test@example.com",
-      firstName: "firstName",
-      lastName: "lastName",
-      profileImage: "imagePath",
+      id: mockUser.id,
+      email: mockUser.email,
+      firstName: mockUser.firstName,
+      lastName: mockUser.lastName,
+      profileImage: mockUser.profileImage,
+      roles: mockUser.roles,
       jwtToken: "fakeJwtToken",
     });
   });
