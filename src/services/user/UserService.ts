@@ -20,6 +20,7 @@ class UserService {
       "request-user-by-id",
       "response-user-by-id",
     );
+    delete user.password;
     return user;
   };
 
@@ -35,12 +36,13 @@ class UserService {
       "request-user-by-email",
       "response-user-by-email",
     );
+    delete user.password;
     return user;
   };
 
   public findAll = async () => {
     const kafkaClient = await KafkaClient.getInstance();
-    const user = await kafkaClient.emitEvent(
+    const users = await kafkaClient.emitEvent(
       {
         data: null,
         error: null,
@@ -48,7 +50,10 @@ class UserService {
       "request-users",
       "response-users",
     );
-    return user;
+    for (const u of users) {
+      delete u.password;
+    }
+    return users;
   };
 
   public create = async (userObject: User) => {
@@ -119,6 +124,8 @@ class UserService {
       "request-update-user",
       "response-update-user",
     );
+
+    delete user.password;
     return user;
   };
 
@@ -134,6 +141,8 @@ class UserService {
       "request-remove-user",
       "response-remove-user",
     );
+
+    delete user.password;
     return user;
   };
 
