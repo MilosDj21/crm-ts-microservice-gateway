@@ -28,7 +28,7 @@ describe("User Service - findById", () => {
       .spyOn(KafkaClient.prototype, "emitEvent")
       .mockResolvedValue(mockUser);
 
-    const user = userService.findById(1);
+    const user = await userService.findById(1);
 
     expect(emitEventSpy).toHaveBeenCalledWith(
       {
