@@ -104,4 +104,97 @@ describe("User Service - findById", () => {
     );
   });
 });
+
+describe("User Service - findByEmail", () => {
+  let userService: UserService;
+
+  beforeAll(() => {
+    userService = new UserService();
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should return user when email is correct", async () => {
+    const mockUser = {
+      id: 1,
+      email: "test@example.com",
+      password: "hashedPassword",
+      firstName: "firstName",
+      lastName: "lastName",
+      profileImage: "imagePath",
+      roles: [1, 2],
+      secret: "twoFaSecret",
+    };
+
+    const emitEventSpy = jest
+      .spyOn(KafkaClient.prototype, "emitEvent")
+      .mockResolvedValue(mockUser);
+
+    const user = await userService.findByEmail("test@example.com");
+
+    expect(emitEventSpy).toHaveBeenCalledWith(
+      {
+        data: {
+          email: "test@example.com",
+        },
+        error: null,
+      },
+      "request-user-by-email",
+      "response-user-by-email",
+    );
+    expect(user).toMatchObject(mockUser);
+  });
+
+  it("should throw NotFoundError when email is not correct", async () => {
+    const emitEventSpy = jest
+      .spyOn(KafkaClient.prototype, "emitEvent")
+      .mockRejectedValue(new NotFoundError("User not found"));
+
+    await expect(userService.findByEmail("test@example.com")).rejects.toThrow(
+      new NotFoundError("User not found"),
+    );
+
+    expect(emitEventSpy).toHaveBeenCalledWith(
+      {
+        data: {
+          email: "test@example.com",
+        },
+        error: null,
+      },
+      "request-user-by-email",
+      "response-user-by-email",
+    );
+  });
+
+  it("should throw GatewayTimeoutError when there is no response", async () => {
+    const emitEventSpy = jest
+      .spyOn(KafkaClient.prototype, "emitEvent")
+      .mockRejectedValue(
+        new GatewayTimeoutError(
+          "Gateway Timeout",
+          "Gateway request-user-by-email failed",
+        ),
+      );
+
+    await expect(userService.findByEmail("test@example.com")).rejects.toThrow(
+      new GatewayTimeoutError(
+        "Gateway Timeout",
+        "Gateway request-user-by-email failed",
+      ),
+    );
+
+    expect(emitEventSpy).toHaveBeenCalledWith(
+      {
+        data: {
+          email: "test@example.com",
+        },
+        error: null,
+      },
+      "request-user-by-email",
+      "response-user-by-email",
+    );
+  });
+});
 //TODO: implement tests for other methods
