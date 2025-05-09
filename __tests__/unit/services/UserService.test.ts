@@ -1,5 +1,9 @@
 import UserService from "../../../src/services/user/UserService";
 import KafkaClient from "../../../src/kafka/KafkaClient";
+import {
+  GatewayTimeoutError,
+  NotFoundError,
+} from "../../../src/middlewares/CustomError";
 
 describe("User Service - findById", () => {
   let userService: UserService;
@@ -50,6 +54,54 @@ describe("User Service - findById", () => {
     });
   });
 
-  //TODO: implement tests for other cases
+  it("should throw NotFoundError when id is not correct", async () => {
+    const emitEventSpy = jest
+      .spyOn(KafkaClient.prototype, "emitEvent")
+      .mockRejectedValue(new NotFoundError("User not found"));
+
+    await expect(userService.findById(1)).rejects.toThrow(
+      new NotFoundError("User not found"),
+    );
+
+    expect(emitEventSpy).toHaveBeenCalledWith(
+      {
+        data: {
+          id: 1,
+        },
+        error: null,
+      },
+      "request-user-by-id",
+      "response-user-by-id",
+    );
+  });
+
+  it("should throw GatewayTimeoutError when there is no response", async () => {
+    const emitEventSpy = jest
+      .spyOn(KafkaClient.prototype, "emitEvent")
+      .mockRejectedValue(
+        new GatewayTimeoutError(
+          "Gateway Timeout",
+          "Gateway request-user-by-id failed",
+        ),
+      );
+
+    await expect(userService.findById(1)).rejects.toThrow(
+      new GatewayTimeoutError(
+        "Gateway Timeout",
+        "Gateway request-user-by-id failed",
+      ),
+    );
+
+    expect(emitEventSpy).toHaveBeenCalledWith(
+      {
+        data: {
+          id: 1,
+        },
+        error: null,
+      },
+      "request-user-by-id",
+      "response-user-by-id",
+    );
+  });
 });
 //TODO: implement tests for other methods
