@@ -197,4 +197,74 @@ describe("User Service - findByEmail", () => {
     );
   });
 });
+
+describe("User Service - findAll", () => {
+  let userService: UserService;
+
+  beforeAll(() => {
+    userService = new UserService();
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should return userList when everything is ok", async () => {
+    const mockUserList = [
+      {
+        id: 1,
+        email: "test@example.com",
+        password: "hashedPassword",
+        firstName: "firstName",
+        lastName: "lastName",
+        profileImage: "imagePath",
+        roles: [1, 2],
+        secret: "twoFaSecret",
+      },
+      {
+        id: 2,
+        email: "test1@example.com",
+        password: "hashedPassword1",
+        firstName: "firstName1",
+        lastName: "lastName1",
+        profileImage: "imagePath1",
+        roles: [3, 4],
+        secret: "twoFaSecret1",
+      },
+    ];
+
+    const emitEventSpy = jest
+      .spyOn(KafkaClient.prototype, "emitEvent")
+      .mockResolvedValue(mockUserList);
+
+    const userList = await userService.findAll();
+
+    expect(emitEventSpy).toHaveBeenCalledWith(
+      {
+        data: null,
+        error: null,
+      },
+      "request-users",
+      "response-users",
+    );
+    expect(userList).toMatchObject([
+      {
+        id: mockUserList[0].id,
+        email: mockUserList[0].email,
+        firstName: mockUserList[0].firstName,
+        lastName: mockUserList[0].lastName,
+        profileImage: mockUserList[0].profileImage,
+        roles: mockUserList[0].roles,
+      },
+      {
+        id: mockUserList[1].id,
+        email: mockUserList[1].email,
+        firstName: mockUserList[1].firstName,
+        lastName: mockUserList[1].lastName,
+        profileImage: mockUserList[1].profileImage,
+        roles: mockUserList[1].roles,
+      },
+    ]);
+  });
+});
 //TODO: implement tests for other methods
