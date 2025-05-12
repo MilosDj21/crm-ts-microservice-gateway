@@ -266,5 +266,32 @@ describe("User Service - findAll", () => {
       },
     ]);
   });
+
+  it("should throw GatewayTimeoutError when there is no response", async () => {
+    const emitEventSpy = jest
+      .spyOn(KafkaClient.prototype, "emitEvent")
+      .mockRejectedValue(
+        new GatewayTimeoutError(
+          "Gateway Timeout",
+          "Gateway request-users failed",
+        ),
+      );
+
+    await expect(userService.findAll()).rejects.toThrow(
+      new GatewayTimeoutError(
+        "Gateway Timeout",
+        "Gateway request-users failed",
+      ),
+    );
+
+    expect(emitEventSpy).toHaveBeenCalledWith(
+      {
+        data: null,
+        error: null,
+      },
+      "request-users",
+      "response-users",
+    );
+  });
 });
 //TODO: implement tests for other methods
