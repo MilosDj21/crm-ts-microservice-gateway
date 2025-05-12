@@ -1,9 +1,18 @@
+import bcrypt from "bcrypt";
+import qrcode from "qrcode";
+import { authenticator } from "otplib";
+import { isEmail, isStrongPassword } from "validator";
+
 import UserService from "../../../src/services/user/UserService";
 import KafkaClient from "../../../src/kafka/KafkaClient";
 import {
   GatewayTimeoutError,
   NotFoundError,
 } from "../../../src/middlewares/CustomError";
+
+jest.mock("bcrypt");
+jest.mock("validator");
+jest.mock("otplib");
 
 describe("User Service - findById", () => {
   let userService: UserService;
@@ -292,6 +301,93 @@ describe("User Service - findAll", () => {
       "request-users",
       "response-users",
     );
+  });
+});
+
+describe("User Service - create", () => {
+  let userService: UserService;
+
+  beforeAll(() => {
+    userService = new UserService();
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should return imageQr when user created correctly", async () => {
+    const mockUser = {
+      id: 1,
+      email: "test@example.com",
+      password: "hashedPassword",
+      firstName: "firstName",
+      lastName: "lastName",
+      profileImage: "imagePath",
+      roles: [1, 2],
+      secret: "twoFaSecret",
+    };
+
+    const emitEventSpy = jest
+      .spyOn(KafkaClient.prototype, "emitEvent")
+      .mockResolvedValue(mockUser);
+    (isEmail as jest.Mock).mockReturnValue(true);
+    (isStrongPassword as jest.Mock).mockReturnValue(true);
+    (bcrypt.genSalt as jest.Mock).mockResolvedValue("saltExample");
+    (bcrypt.hash as jest.Mock).mockResolvedValue(mockUser.password);
+    (authenticator.generateSecret as jest.Mock).mockReturnValue(
+      mockUser.secret,
+    );
+
+    const imageQr = await userService.create({
+      email: mockUser.email,
+      password: mockUser.password,
+      firstName: mockUser.firstName,
+      lastName: mockUser.lastName,
+      roles: mockUser.roles,
+    });
+
+    const otpauth = authenticator.keyuri(
+      mockUser.email,
+      "Imaginary CRM",
+      mockUser.secret,
+    );
+    let imageQrMock = "";
+    qrcode.toDataURL(
+      otpauth,
+      (error: Error | null | undefined, imageUrl: string) => {
+        if (error) {
+          console.log(error);
+          return;
+        }
+        imageQrMock = imageUrl;
+      },
+    );
+
+    expect(emitEventSpy).toHaveBeenCalledWith(
+      {
+        data: {
+          email: mockUser.email,
+          password: mockUser.password,
+          firstName: mockUser.firstName,
+          lastName: mockUser.lastName,
+          roles: mockUser.roles,
+          profileImage: mockUser.profileImage,
+          secret: mockUser.secret,
+        },
+        error: null,
+      },
+      "request-create-user",
+      "response-create-user",
+    );
+    expect(bcrypt.genSalt).toHaveBeenCalled;
+    expect(bcrypt.hash).toHaveBeenCalledWith(mockUser.password, "saltExample");
+    expect(authenticator.generateSecret).toHaveBeenCalled;
+    expect(authenticator.keyuri).toHaveBeenCalledWith(
+      mockUser.email,
+      "Imaginary CRM",
+      mockUser.secret,
+    );
+    expect(imageQrMock).toMatch(imageQr);
   });
 });
 //TODO: implement tests for other methods
