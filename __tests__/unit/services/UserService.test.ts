@@ -6,6 +6,7 @@ import { isEmail, isStrongPassword } from "validator";
 import UserService from "../../../src/services/user/UserService";
 import KafkaClient from "../../../src/kafka/KafkaClient";
 import {
+  BadRequestError,
   GatewayTimeoutError,
   NotFoundError,
 } from "../../../src/middlewares/CustomError";
@@ -388,6 +389,92 @@ describe("User Service - create", () => {
       mockUser.secret,
     );
     expect(imageQrMock).toMatch(imageQr);
+  });
+
+  it("should throw BadRequestError when email is missing", async () => {
+    await expect(
+      userService.create({
+        password: "hashedPassword",
+        firstName: "firstName",
+        lastName: "lastName",
+        profileImage: "imagePath",
+        roles: [1, 2],
+      }),
+    ).rejects.toThrow(new BadRequestError("All fields must be filled"));
+  });
+
+  it("should throw BadRequestError when password is missing", async () => {
+    await expect(
+      userService.create({
+        email: "test@example.com",
+        firstName: "firstName",
+        lastName: "lastName",
+        profileImage: "imagePath",
+        roles: [1, 2],
+      }),
+    ).rejects.toThrow(new BadRequestError("All fields must be filled"));
+  });
+
+  it("should throw BadRequestError when first name is missing", async () => {
+    await expect(
+      userService.create({
+        email: "test@example.com",
+        password: "hashedPassword",
+        lastName: "lastName",
+        profileImage: "imagePath",
+        roles: [1, 2],
+      }),
+    ).rejects.toThrow(new BadRequestError("All fields must be filled"));
+  });
+
+  it("should throw BadRequestError when last name is missing", async () => {
+    await expect(
+      userService.create({
+        email: "test@example.com",
+        password: "hashedPassword",
+        firstName: "firstName",
+        profileImage: "imagePath",
+        roles: [1, 2],
+      }),
+    ).rejects.toThrow(new BadRequestError("All fields must be filled"));
+  });
+
+  it("should throw BadRequestError when roles are missing", async () => {
+    await expect(
+      userService.create({
+        email: "test@example.com",
+        password: "hashedPassword",
+        firstName: "firstName",
+        lastName: "lastName",
+        profileImage: "imagePath",
+      }),
+    ).rejects.toThrow(new BadRequestError("All fields must be filled"));
+  });
+
+  it("should throw BadRequestError when email is not in valid format", async () => {
+    await expect(
+      userService.create({
+        email: "testexamplecom",
+        password: "hashedPassword",
+        firstName: "firstName",
+        lastName: "lastName",
+        profileImage: "imagePath",
+        roles: [1, 2],
+      }),
+    ).rejects.toThrow(new BadRequestError("Not a valid email!"));
+  });
+
+  it("should throw BadRequestError when password is not strong enough", async () => {
+    await expect(
+      userService.create({
+        email: "test@example.com",
+        password: "pass",
+        firstName: "firstName",
+        lastName: "lastName",
+        profileImage: "imagePath",
+        roles: [1, 2],
+      }),
+    ).rejects.toThrow(new BadRequestError("Password not strong enough!"));
   });
 });
 //TODO: implement tests for other methods
